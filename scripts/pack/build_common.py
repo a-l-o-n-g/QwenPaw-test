@@ -47,7 +47,24 @@ def _run(
     run_env = os.environ.copy()
     if env:
         run_env.update(env)
-    subprocess.run(cmd, cwd=cwd or REPO_ROOT, env=run_env, check=True)
+    print(f"+ {' '.join(cmd)}", flush=True)
+    completed = subprocess.run(
+        cmd,
+        cwd=cwd or REPO_ROOT,
+        env=run_env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    if completed.stdout:
+        print(completed.stdout, end="", flush=True)
+    if completed.returncode != 0:
+        raise subprocess.CalledProcessError(
+            completed.returncode,
+            cmd,
+            output=completed.stdout,
+        )
 
 
 def _pick_wheel(wheel_arg: str | None) -> Path:
@@ -108,6 +125,11 @@ def main() -> int:
             "Download wheels for packages affected by conda-unpack bug. "
             "Cached to .cache/conda_unpack_wheels/ for later reinstall."
         ),
+    )
+    parser.add_argument(
+        "--keep-env",
+        action="store_true",
+        help="Do not remove the temporary conda env on exit (for debugging).",
     )
     args = parser.parse_args()
     out_path = Path(args.output).resolve()
@@ -231,10 +253,13 @@ def main() -> int:
         _run(pack_cmd)
         print(f"Packed to {out_path}")
     finally:
-        try:
-            _run([conda, "env", "remove", "-n", env_name, "-y"])
-        except Exception as e:
-            print(f"Warning: Failed to remove temp env {env_name}: {e}")
+        if args.keep_env:
+            print(f"Keeping temp env {env_name} (--keep-env).")
+        else:
+            try:
+                _run([conda, "env", "remove", "-n", env_name, "-y"])
+            except Exception as e:
+                print(f"Warning: Failed to remove temp env {env_name}: {e}")
     return 0
 
 
