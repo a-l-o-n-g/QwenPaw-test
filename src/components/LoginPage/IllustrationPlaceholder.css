@@ -1,0 +1,44 @@
+/* IllustrationPlaceholder.css */
+.illustration-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=isometric%20blue%20circuit%20board%20grid%20glowing%20tech%20background%203d&image_size=square');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+
+.illustration-glow {
+  position: absolute;
+  bottom: 20%;
+  width: 250px;
+  height: 100px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.illustration-robot {
+  position: relative;
+  z-index: 10;
+  animation: float 6s ease-in-out infinite;
+}
+
+.illustration-img {
+  width: 320px;
+  height: 320px;
+  object-fit: contain;
+  filter: drop-shadow(0 25px 25px rgba(0,0,0,0.15));
+  mix-blend-mode: multiply;
+}

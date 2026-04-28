@@ -1,4 +1,5 @@
 import React from 'react';
+import './QRCodeDisplay.css';
 
 export const QRCodeDisplay: React.FC = () => {
   return (

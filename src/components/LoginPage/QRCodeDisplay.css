@@ -1,0 +1,45 @@
+/* QRCodeDisplay.css */
+.qrcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.qrcode-box {
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  border: 1px solid #f3f4f6;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: zoomInFade 0.5s ease-out forwards;
+}
+
+.qrcode-img {
+  width: 12rem;
+  height: 12rem;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.qrcode-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 8px 2px rgba(59, 130, 246, 0.5);
+  z-index: 10;
+  animation: scan 3s linear infinite;
+}
+
+.qrcode-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+}

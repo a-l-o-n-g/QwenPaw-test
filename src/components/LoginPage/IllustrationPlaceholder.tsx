@@ -1,4 +1,5 @@
 import React from 'react';
+import './IllustrationPlaceholder.css';
 
 export const IllustrationPlaceholder: React.FC = () => {
   return (

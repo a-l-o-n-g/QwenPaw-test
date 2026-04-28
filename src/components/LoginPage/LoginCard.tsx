@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AccountForm } from './AccountForm';
 import { QRCodeDisplay } from './QRCodeDisplay';
+import './LoginCard.css';
 
 type Tab = 'account' | 'qrcode';
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Lock } from 'lucide-react';
+import './AccountForm.css';
 
 type AccountMode = 'password' | 'code';
 

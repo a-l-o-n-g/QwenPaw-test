@@ -1,6 +1,7 @@
 import React from 'react';
-import { LoginCard } from '../components/LoginCard';
-import { IllustrationPlaceholder } from '../components/IllustrationPlaceholder';
+import { LoginCard } from '../components/LoginPage/LoginCard';
+import { IllustrationPlaceholder } from '../components/LoginPage/IllustrationPlaceholder';
+import './LoginPage.css';
 
 export const LoginPage: React.FC = () => {
   return (
