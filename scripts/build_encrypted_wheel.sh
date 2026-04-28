@@ -41,7 +41,8 @@ echo "=================================================="
 cd "$BUILD_DIR"
 
 # Encrypt the tools directory
-pyarmor gen -O obf_dist -r src/qwenpaw/agents/tools/
+# Exclude browser_control.py because it exceeds PyArmor free trial limit of 1000 lines per file (it has 3740+ lines)
+pyarmor gen -O obf_dist -r --exclude "*/browser_control.py" src/qwenpaw/agents/tools/
 
 # Copy the obfuscated code back over the original files in the build workspace
 echo "Copying obfuscated files from obf_dist/tools/ to src/qwenpaw/agents/tools/"
