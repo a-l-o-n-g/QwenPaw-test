@@ -37,9 +37,9 @@
 这一步的目的是保护我们的核心资产，并将其标准化封装。
 
 1. **执行构建脚本**：
-   在项目根目录下，执行以下命令（支持 Git Bash、WSL 或直接执行）：
-   ```bash
-   bash scripts/build_encrypted_wheel.sh
+   在 **Anaconda Prompt** 或 PowerShell 中执行以下命令：
+   ```powershell
+   powershell.exe -ExecutionPolicy Bypass -File .\scripts\build_encrypted_wheel.ps1
    ```
 
 2. **工作原理解析**：
