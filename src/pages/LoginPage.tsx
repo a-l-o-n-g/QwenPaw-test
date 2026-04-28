@@ -1,11 +1,10 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { LoginCard } from '../components/LoginCard';
 import { IllustrationPlaceholder } from '../components/IllustrationPlaceholder';
 
 export const LoginPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#EAEFFF] via-[#DCEBFF] to-[#D4E3FF] flex items-center justify-center relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#EAEFFF] via-[#DCEBFF] to-[#D4E3FF] flex items-center justify-center relative overflow-hidden font-sans animate-in fade-in duration-700">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-[#BBD5FF]/40 to-transparent"></div>
@@ -28,24 +27,14 @@ export const LoginPage: React.FC = () => {
       {/* Main Content Container */}
       <div className="z-10 w-full max-w-[1200px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center md:justify-around gap-12 lg:gap-24">
         {/* Left Side: 3D Illustration */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="hidden md:flex flex-1 items-center justify-center"
-        >
+        <div className="hidden md:flex flex-1 items-center justify-center animate-in slide-in-from-left-8 fade-in duration-1000">
           <IllustrationPlaceholder />
-        </motion.div>
+        </div>
 
         {/* Right Side: Login Card */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-[420px]"
-        >
+        <div className="w-full max-w-[420px] animate-in slide-in-from-right-8 fade-in duration-1000 delay-200 fill-mode-both">
           <LoginCard />
-        </motion.div>
+        </div>
       </div>
     </div>
   );

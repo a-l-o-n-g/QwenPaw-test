@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { AccountForm } from './AccountForm';
 import { QRCodeDisplay } from './QRCodeDisplay';
 
@@ -24,12 +23,11 @@ export const LoginCard: React.FC = () => {
           }`}
         >
           账号登录
-          {activeTab === 'account' && (
-            <motion.div
-              layoutId="tab-indicator"
-              className="absolute -bottom-[13px] left-0 right-0 h-[2px] bg-blue-600 rounded-full"
-            />
-          )}
+          <div
+            className={`absolute -bottom-[13px] left-0 right-0 h-[2px] bg-blue-600 rounded-full transition-all duration-300 ${
+              activeTab === 'account' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+            }`}
+          />
         </button>
         <button
           onClick={() => setActiveTab('qrcode')}
@@ -38,41 +36,22 @@ export const LoginCard: React.FC = () => {
           }`}
         >
           扫码登录
-          {activeTab === 'qrcode' && (
-            <motion.div
-              layoutId="tab-indicator"
-              className="absolute -bottom-[13px] left-0 right-0 h-[2px] bg-blue-600 rounded-full"
-            />
-          )}
+          <div
+            className={`absolute -bottom-[13px] left-0 right-0 h-[2px] bg-blue-600 rounded-full transition-all duration-300 ${
+              activeTab === 'qrcode' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+            }`}
+          />
         </button>
       </div>
 
       {/* Content */}
       <div className="flex-1 relative">
-        <AnimatePresence mode="wait">
-          {activeTab === 'account' ? (
-            <motion.div
-              key="account"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <AccountForm />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="qrcode"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="h-full flex flex-col"
-            >
-              <QRCodeDisplay />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className={`transition-opacity duration-300 ${activeTab === 'account' ? 'opacity-100 relative z-10' : 'opacity-0 absolute inset-0 pointer-events-none z-0'}`}>
+          {activeTab === 'account' && <AccountForm />}
+        </div>
+        <div className={`h-full flex flex-col transition-opacity duration-300 ${activeTab === 'qrcode' ? 'opacity-100 relative z-10' : 'opacity-0 absolute inset-0 pointer-events-none z-0'}`}>
+          {activeTab === 'qrcode' && <QRCodeDisplay />}
+        </div>
       </div>
     </div>
   );
