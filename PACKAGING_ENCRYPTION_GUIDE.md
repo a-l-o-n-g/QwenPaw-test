@@ -1,6 +1,6 @@
 # QwenPaw 客户端加密与独立打包指南 (最终版)
 
-本文档详细记录了如何将本工程打包成带有独立环境的 Windows 客户端（`.exe`），并对核心 Python 代码（如业务技能包 `skills`）进行不可逆加密，以保护核心商业逻辑和知识产权。
+本文档详细记录了如何将本工程打包成带有独立环境的 Windows 客户端（`.exe`），并对核心 Python 代码（如业务工具包 `tools`）进行不可逆加密，以保护核心商业逻辑和知识产权。
 按照本文档操作，任何人都可以零门槛复现并获得最终加密客户端。
 
 ---
@@ -45,7 +45,7 @@
 2. **工作原理解析**：
    - 脚本会首先自动进入 `console/` 构建最新的前端界面。
    - 在项目根目录创建一个临时“无菌”工作区 `build_encrypted/`，复制源码，防止污染你本地的明文开发代码。
-   - 针对 `src/qwenpaw/agents/skills/` 目录调用 PyArmor 进行混淆加密。
+   - 针对 `src/qwenpaw/agents/tools/` 目录调用 PyArmor 进行混淆加密。
    - 将加密乱码文件和 PyArmor 运行依赖库（`pyarmor_runtime_xxxxxx`）覆盖回临时工作区。
    - 最终在项目根目录的 `dist/` 文件夹下生成带有加密代码的安装包：`qwenpaw-xxx.whl`。
 
@@ -77,7 +77,7 @@
 ### 1. PyArmor 提示 "Out of License"（超出免费版文件限制）
 - **现象**：在第二步执行加密脚本时中断报错。
 - **原因**：PyArmor 免费版单次加密的单个项目最多允许包含 100 个文件，而 QwenPaw 框架全量源码文件极多。
-- **解决方案**：在 `build_encrypted_wheel.sh` 中，**仅指定核心商业逻辑文件夹进行加密**（如 `pyarmor gen -r src/qwenpaw/agents/skills/`）。这样既保护了最核心的提示词和逻辑，又避开了免费版限制。若需全量加密，请购买 PyArmor 授权。
+- **解决方案**：在 `build_encrypted_wheel.sh` 中，**仅指定核心商业逻辑文件夹进行加密**（如 `pyarmor gen -r src/qwenpaw/agents/tools/`）。这样既保护了最核心的提示词和逻辑，又避开了免费版限制。若需全量加密，请购买 PyArmor 授权。
 
 ### 2. Windows 下 `conda-pack` 神秘静默失败 (Exit Code 1)
 - **现象**：执行第三步时，抛出 `CalledProcessError`，提示 `conda run conda-pack ... returned non-zero exit status 1`，且无具体错误原因。
@@ -120,6 +120,6 @@
   ```
 
 ### 5. Markdown (`.md`) 或配置文件没有被加密？
-- **现象**：解压生成的客户端，发现 `skills/` 下的 Python 文件乱码了，但 `.md` 和 `.json` 依然是明文。
+- **现象**：解压生成的客户端，发现 `tools/` 下的 Python 文件乱码了，但 `.md` 和 `.json` 依然是明文。
 - **原因**：PyArmor 仅支持加密 Python 代码（`.py`）。
 - **进阶解决方案**：如果你的 `.md` 中包含极高价值的 Prompt，请不要将其存为独立文件，而是将其**硬编码为 Python `.py` 文件中的字符串变量**。这样 PyArmor 就能将其连同算法逻辑一起混淆加密。

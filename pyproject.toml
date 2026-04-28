@@ -60,10 +60,12 @@ include-package-data = true
     "console/**",
     "agents/md_files/**",
     "agents/skills/**",
+    "agents/tools/**",
     "tokenizer/**",
     "security/tool_guard/rules/**",
     "security/skill_scanner/rules/**",
     "security/skill_scanner/data/**",
+    "pyarmor_runtime_*/**",
 ]
 
 [build-system]

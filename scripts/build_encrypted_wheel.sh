@@ -36,16 +36,16 @@ mkdir -p "$BUILD_DIR"
 cp -R src/ pyproject.toml README.md README_zh.md LICENSE "$BUILD_DIR/"
 
 echo "=================================================="
-echo "4. Encrypting Python code (Skills)..."
+echo "4. Encrypting Python code (Tools)..."
 echo "=================================================="
 cd "$BUILD_DIR"
 
-# Encrypt the skills directory
-pyarmor gen -O obf_dist -r src/qwenpaw/agents/skills/
+# Encrypt the tools directory
+pyarmor gen -O obf_dist -r src/qwenpaw/agents/tools/
 
 # Copy the obfuscated code back over the original files in the build workspace
-echo "Copying obfuscated files from obf_dist/skills/ to src/qwenpaw/agents/skills/"
-cp -R obf_dist/skills/* src/qwenpaw/agents/skills/
+echo "Copying obfuscated files from obf_dist/tools/ to src/qwenpaw/agents/tools/"
+cp -R obf_dist/tools/* src/qwenpaw/agents/tools/
 
 mv obf_dist/pyarmor_runtime_* src/qwenpaw/ 2>/dev/null || true
 
