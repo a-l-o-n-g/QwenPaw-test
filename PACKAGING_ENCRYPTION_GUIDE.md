@@ -32,6 +32,35 @@
 
 ---
 
+## ✅ 仓库首次到手需要确认/改动的文件（必须）
+
+为了保证“第一次拿到仓库就能打包成功”，请在开始前确认以下文件/改动已存在（本文档对应仓库内最终稳定版做法）：  
+
+1. **加密 Wheel 构建脚本（Windows 版）**  
+   - 目标文件：[build_encrypted_wheel.ps1](file:///workspace/scripts/build_encrypted_wheel.ps1)  
+   - 作用：构建前端 + 使用 PyArmor 加密 `src/qwenpaw/agents/tools/` + 生成加密 `.whl` 到 `dist/`  
+   - 关键点：PyArmor 试用版会在部分场景触发限制，脚本中已排除 `browser_control.py`（该文件过大，试用版可能报 `out of license`）  
+
+2. **打包器 build_common 在 Windows 需要绕过 conda run**  
+   - 目标文件：[build_common.py](file:///workspace/scripts/pack/build_common.py)  
+   - 原因：Windows 下 `conda run ... conda-pack ...` 可能静默失败并返回 exit code 1  
+   - 处理：脚本在 Windows (`os.name == "nt"`) 下使用 `conda.bat activate <env> && conda-pack ...` 的方式执行打包  
+
+3. **Windows 打包脚本必须跳过 conda-unpack**  
+   - 目标文件：[build_win.ps1](file:///workspace/scripts/pack/build_win.ps1)  
+   - 原因：`conda-unpack` 在 Windows 上可能破坏第三方库的 Python 字符串转义（典型：`huggingface_hub` 报 `SyntaxError: unterminated string literal`），甚至连 `pip` 都会受影响  
+   - 处理：脚本已改为跳过 `conda-unpack`（我们的启动器使用相对路径启动 `python.exe`，不依赖 conda-unpack 修前缀）  
+
+4. **NSIS 编译器 makensis 的查找方式（不依赖 PATH）**  
+   - 目标文件：[build_win.ps1](file:///workspace/scripts/pack/build_win.ps1)  
+   - 处理：脚本会优先从 PATH 查找 `makensis`，若找不到则尝试默认安装路径（如 `C:\\Program Files (x86)\\NSIS\\makensis.exe`）  
+
+5. **包数据包含 tools 与 pyarmor 运行时**  
+   - 目标文件：[pyproject.toml](file:///workspace/pyproject.toml#L57-L68)  
+   - 必须包含：`agents/tools/**` 与 `pyarmor_runtime_*/**`，否则 Wheel 安装后运行会缺文件或缺 PyArmor runtime  
+
+---
+
 ## 🚀 第二步：加密代码并生成 Wheel 核心包
 
 这一步的目的是保护我们的核心资产，并将其标准化封装。
@@ -77,7 +106,10 @@
 ### 1. PyArmor 提示 "Out of License"（超出免费版文件限制）
 - **现象**：在第二步执行加密脚本时中断报错。
 - **原因**：PyArmor 免费版单次加密的单个项目最多允许包含 100 个文件，而 QwenPaw 框架全量源码文件极多。
-- **解决方案**：在 `build_encrypted_wheel.sh` 中，**仅指定核心商业逻辑文件夹进行加密**（如 `pyarmor gen -r src/qwenpaw/agents/tools/`）。这样既保护了最核心的提示词和逻辑，又避开了免费版限制。若需全量加密，请购买 PyArmor 授权。
+- **解决方案**：
+  - 只加密核心目录（例如 `src/qwenpaw/agents/tools/`），不要全量加密 `src/qwenpaw/`  
+  - 若仍报 `out of license`，通常是单文件过大或命中文件数限制：优先在加密脚本中排除超大文件（例如 `browser_control.py`）  
+  - 若必须全量加密或加密超大文件：需要购买 PyArmor 授权或重构拆分大文件  
 
 ### 2. Windows 下 `conda-pack` 神秘静默失败 (Exit Code 1)
 - **现象**：执行第三步时，抛出 `CalledProcessError`，提示 `conda run conda-pack ... returned non-zero exit status 1`，且无具体错误原因。
@@ -99,7 +131,6 @@
   因为我们的客户端启动脚本使用的是纯相对路径（`"%~dp0python.exe"`），是真正的绿色便携版，**根本不需要运行 `conda-unpack`！**
   打开 `scripts/pack/build_win.ps1`，找到并删除所有关于执行 `conda-unpack` 及错误恢复的代码块（大约 90 行），直接替换为：
   ```powershell
-  # 彻底删除 conda-unpack 执行逻辑
   Write-Host "[build_win] Skipping conda-unpack to prevent Python string escaping corruption on Windows."
   ```
   *(注：切勿在 `.ps1` 脚本中写中文，否则会导致 PowerShell GBK/UTF-8 解析失败，抛出“数组索引表达式丢失”的报错)*

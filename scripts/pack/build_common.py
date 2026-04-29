@@ -236,21 +236,43 @@ def main() -> int:
         )
         if out_path.exists():
             out_path.unlink()
-        pack_cmd = [
-            conda,
-            "run",
-            "-n",
-            env_name,
-            "conda-pack",
-            "-n",
-            env_name,
-            "-o",
-            str(out_path),
-            "-f",
-        ]
-        if args.format != "infer":
-            pack_cmd.extend(["--format", args.format])
-        _run(pack_cmd)
+        if os.name == "nt":
+            conda_exe = Path(conda)
+            conda_bat = conda_exe.with_suffix(".bat")
+            conda_activate = (
+                f"\"{conda_bat}\" activate {env_name}"
+                if conda_bat.exists()
+                else f"conda activate {env_name}"
+            )
+            fmt = "" if args.format == "infer" else f" --format {args.format}"
+            cmd_str = (
+                f"{conda_activate} && "
+                f"conda-pack -n {env_name} -o \"{out_path}\" -f{fmt} "
+                f"--ignore-missing-files --ignore-editable-packages"
+            )
+            subprocess.run(
+                cmd_str,
+                cwd=REPO_ROOT,
+                env=os.environ.copy(),
+                shell=True,
+                check=True,
+            )
+        else:
+            pack_cmd = [
+                conda,
+                "run",
+                "-n",
+                env_name,
+                "conda-pack",
+                "-n",
+                env_name,
+                "-o",
+                str(out_path),
+                "-f",
+            ]
+            if args.format != "infer":
+                pack_cmd.extend(["--format", args.format])
+            _run(pack_cmd)
         print(f"Packed to {out_path}")
     finally:
         if args.keep_env:

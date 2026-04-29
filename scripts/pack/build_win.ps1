@@ -89,38 +89,7 @@ Write-Host "[build_win] python.exe found at env root: $EnvRoot"
 # Rewrite prefix in packed env so paths point to current location (required after move).
 $CondaUnpack = Join-Path $EnvRoot "Scripts\conda-unpack.exe"
 if (Test-Path $CondaUnpack) {
-  Write-Host "[build_win] Running conda-unpack..."
-  & $CondaUnpack
-  if ($LASTEXITCODE -ne 0) { throw "conda-unpack failed with exit code $LASTEXITCODE" }
-  
-  # Fix conda-unpack bug: it corrupts Python string escaping on Windows
-  # See: issue.md and https://github.com/conda/conda-pack/issues/154
-  # Solution: Reinstall affected packages using cached wheels
-  Write-Host "[build_win] Fixing conda-unpack corruption by reinstalling affected packages..."
-  $WheelsCache = Join-Path $RepoRoot ".cache\conda_unpack_wheels"
-  if (Test-Path $WheelsCache) {
-    $pythonExe = Join-Path $EnvRoot "python.exe"
-    
-    foreach ($pkg in $CondaUnpackAffectedPackages) {
-      Write-Host "  Reinstalling $pkg..."
-      & $pythonExe -m pip install --force-reinstall --no-deps `
-        --find-links $WheelsCache --no-index $pkg
-      if ($LASTEXITCODE -ne 0) {
-        Write-Host "  WARN: Failed to reinstall $pkg (exit code: $LASTEXITCODE)" -ForegroundColor Yellow
-      }
-    }
-    
-    # Verify the fix worked
-    Write-Host "[build_win] Verifying fix..."
-    & $pythonExe -c "from huggingface_hub import file_download; print('✓ huggingface_hub import OK')"
-    if ($LASTEXITCODE -ne 0) {
-      throw "CRITICAL: huggingface_hub still has import errors after reinstall. See issue.md"
-    }
-    Write-Host "[build_win] ✓ conda-unpack corruption fixed successfully."
-  } else {
-    Write-Host "[build_win] WARN: wheels_cache not found at $WheelsCache" -ForegroundColor Yellow
-    Write-Host "[build_win] WARN: Cannot fix conda-unpack corruption. App may fail to start." -ForegroundColor Yellow
-  }
+  Write-Host "[build_win] Skipping conda-unpack to prevent Python string escaping corruption on Windows."
 } else {
   Write-Host "[build_win] WARN: conda-unpack.exe not found at $CondaUnpack, skipping."
 }
@@ -305,16 +274,33 @@ $nsiArgs = @(
 Write-Host "=== Checking makensis availability ==="
 try {
   $makensisPath = (Get-Command makensis -ErrorAction Stop).Source
-  Write-Host "[build_win] makensis found at: $makensisPath"
 } catch {
-  throw "makensis not found in PATH. Please install NSIS and ensure makensis.exe is in PATH."
+  $makensisPath = ""
 }
+if (-not $makensisPath) {
+  $possiblePaths = @(
+    "C:\Program Files (x86)\NSIS\makensis.exe",
+    "C:\Program Files\NSIS\makensis.exe",
+    "D:\Program Files (x86)\NSIS\makensis.exe",
+    "D:\Program Files\NSIS\makensis.exe"
+  )
+  foreach ($p in $possiblePaths) {
+    if (Test-Path $p) {
+      $makensisPath = $p
+      break
+    }
+  }
+}
+if (-not $makensisPath) {
+  throw "makensis not found. Please install NSIS and ensure makensis.exe is accessible (PATH or default install dirs)."
+}
+Write-Host "[build_win] makensis found at: $makensisPath"
 
-Write-Host "[build_win] Running: makensis $($nsiArgs -join ' ')"
+Write-Host "[build_win] Running: $makensisPath $($nsiArgs -join ' ')"
 Write-Host "=== NSIS will compile from: $NsiPath ==="
 Write-Host "=== NSIS unpacked source: $UnpackedFull ==="
 Write-Host "=== NSIS output installer: $OutputExeNsi ==="
-$nsisOutput = & makensis @nsiArgs 2>&1 | Out-String
+$nsisOutput = & $makensisPath @nsiArgs 2>&1 | Out-String
 Write-Host "=== NSIS Output Begin ==="
 Write-Host $nsisOutput
 Write-Host "=== NSIS Output End ==="
