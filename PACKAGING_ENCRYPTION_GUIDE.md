@@ -36,6 +36,17 @@
 
 为了保证“第一次拿到仓库就能打包成功”，请在开始前确认以下文件/改动已存在（本文档对应仓库内最终稳定版做法）：  
 
+0. **为什么有两个加密脚本（.ps1 和 .sh）？应该用哪个？**  
+   - 目标文件：  
+     - Windows： [build_encrypted_wheel.ps1](file:///workspace/scripts/build_encrypted_wheel.ps1)  
+     - Linux/macOS/WSL/Git Bash： [build_encrypted_wheel.sh](file:///workspace/scripts/build_encrypted_wheel.sh)  
+   - 原因：同一套“加密 + 打 wheel”逻辑需要适配不同系统的 shell 环境。  
+     - Windows 上直接用 bash 往往依赖 WSL/Git Bash；WSL 服务被禁用时会报 `Bash/0x80070422`，因此提供 `.ps1` 作为原生替代。  
+     - Linux/macOS 上天然具备 bash，因此保留 `.sh` 版本便于在非 Windows 环境构建 wheel。  
+   - 推荐：  
+     - 只做 Windows 客户端：全流程使用 PowerShell 脚本（`.ps1`）  
+     - 只做 Linux/macOS 包：使用 bash 脚本（`.sh`）  
+
 1. **加密 Wheel 构建脚本（Windows 版）**  
    - 目标文件：[build_encrypted_wheel.ps1](file:///workspace/scripts/build_encrypted_wheel.ps1)  
    - 作用：构建前端 + 使用 PyArmor 加密 `src/qwenpaw/agents/tools/` + 生成加密 `.whl` 到 `dist/`  
