@@ -48,7 +48,7 @@ pyarmor gen -O obf_dist -r --exclude "*/browser_control.py" src/qwenpaw/agents/t
 echo "Copying obfuscated files from obf_dist/tools/ to src/qwenpaw/agents/tools/"
 cp -R obf_dist/tools/* src/qwenpaw/agents/tools/
 
-mv obf_dist/pyarmor_runtime_* src/qwenpaw/ 2>/dev/null || true
+mv obf_dist/pyarmor_runtime_* src/ 2>/dev/null || true
 
 echo "=================================================="
 echo "5. Building the final Encrypted Wheel package..."

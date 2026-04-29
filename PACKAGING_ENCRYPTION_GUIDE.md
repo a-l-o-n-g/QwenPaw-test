@@ -57,7 +57,7 @@
 
 5. **包数据包含 tools 与 pyarmor 运行时**  
    - 目标文件：[pyproject.toml](file:///workspace/pyproject.toml#L57-L68)  
-   - 必须包含：`agents/tools/**` 与 `pyarmor_runtime_*/**`，否则 Wheel 安装后运行会缺文件或缺 PyArmor runtime  
+   - 必须包含：`agents/tools/**` 与 `pyarmor_runtime_000000` 的 package-data，否则 Wheel 安装后运行会报 `ModuleNotFoundError: pyarmor_runtime_000000`  
 
 ---
 
@@ -75,7 +75,7 @@
    - 脚本会首先自动进入 `console/` 构建最新的前端界面。
    - 在项目根目录创建一个临时“无菌”工作区 `build_encrypted/`，复制源码，防止污染你本地的明文开发代码。
    - 针对 `src/qwenpaw/agents/tools/` 目录调用 PyArmor 进行混淆加密。
-   - 将加密乱码文件和 PyArmor 运行依赖库（`pyarmor_runtime_xxxxxx`）覆盖回临时工作区。
+   - 将加密乱码文件和 PyArmor 运行依赖库（`pyarmor_runtime_000000`）放到 `src/` 下，作为顶层包随 wheel 一起安装（否则运行时报 `ModuleNotFoundError`）。
    - 最终在项目根目录的 `dist/` 文件夹下生成带有加密代码的安装包：`qwenpaw-xxx.whl`。
 
 ---

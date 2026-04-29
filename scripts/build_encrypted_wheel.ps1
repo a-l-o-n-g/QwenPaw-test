@@ -57,7 +57,7 @@ if (Test-Path "obf_dist\tools\") {
 
 $RuntimeFiles = Get-ChildItem -Path "obf_dist\pyarmor_runtime_*" -ErrorAction SilentlyContinue
 if ($RuntimeFiles) {
-    Move-Item -Path "obf_dist\pyarmor_runtime_*" -Destination "src\qwenpaw\" -Force
+    Move-Item -Path "obf_dist\pyarmor_runtime_*" -Destination "src\" -Force
 }
 
 Write-Host "=================================================="

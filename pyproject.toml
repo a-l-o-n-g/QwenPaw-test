@@ -65,8 +65,8 @@ include-package-data = true
     "security/tool_guard/rules/**",
     "security/skill_scanner/rules/**",
     "security/skill_scanner/data/**",
-    "pyarmor_runtime_*/**",
 ]
+"pyarmor_runtime_000000" = ["**/*"]
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]

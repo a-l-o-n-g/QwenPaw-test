@@ -60,11 +60,13 @@ include-package-data = true
     "console/**",
     "agents/md_files/**",
     "agents/skills/**",
+    "agents/tools/**",
     "tokenizer/**",
     "security/tool_guard/rules/**",
     "security/skill_scanner/rules/**",
     "security/skill_scanner/data/**",
 ]
+"pyarmor_runtime_000000" = ["**/*"]
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
