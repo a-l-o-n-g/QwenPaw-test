@@ -70,6 +70,11 @@
    - 目标文件：[pyproject.toml](file:///workspace/pyproject.toml#L57-L68)  
    - 必须包含：`agents/tools/**` 与 `pyarmor_runtime_000000` 的 package-data，否则 Wheel 安装后运行会报 `ModuleNotFoundError: pyarmor_runtime_000000`  
 
+6. **Python 版本必须一致（解决 DLL load failed）**  
+   - 目标文件：[build_win.ps1](file:///workspace/scripts/pack/build_win.ps1)  
+   - 原因：PyArmor 加密时生成的 C 扩展库（`pyarmor_runtime_*.pyd`）与当前环境的 Python 版本强绑定（例如 Python 3.12）。如果打包时 `conda-pack` 创建的独立环境是 Python 3.10，客户端运行时就会报 `ImportError: DLL load failed while importing pyarmor_runtime`。  
+   - 处理：在 `build_win.ps1` 中动态获取当前宿主环境的 Python 版本（如 `$PyVer`），并传递给 `build_common.py --python $PyVer`，确保加密和打包使用完全一致的 Python 版本。  
+
 ---
 
 ## 🚀 第二步：加密代码并生成 Wheel 核心包

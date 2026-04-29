@@ -56,7 +56,9 @@ if ($RunWheelBuild) {
 }
 
 Write-Host "== Building conda-packed env =="
-& python $PackDir\build_common.py --output $Archive --format zip --cache-wheels
+$PyVer = & python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+Write-Host "[build_win] Detected host Python version: $PyVer"
+& python $PackDir\build_common.py --output $Archive --format zip --cache-wheels --python $PyVer
 if ($LASTEXITCODE -ne 0) {
   throw "build_common.py failed with exit code $LASTEXITCODE"
 }
